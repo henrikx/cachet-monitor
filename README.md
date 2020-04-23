@@ -19,12 +19,14 @@ cachet-monitor supports many configuration possibilites. You can set multiple ac
 
 
 **Monitoring types**
+
 `http` HTTP monitoring
 
 `ping` **NOT IMPLEMENTED YET!** Ping monitoring
 
 
 **Possible actions**
+
 `update_component` Sets component status to configured values
 
 `create_incident` Creates an incident with configured values
