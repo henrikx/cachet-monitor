@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29721.120
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cachet-monitor", "cachet-monitor.csproj", "{A6FEABDC-8325-4360-A71A-0665CF45ABBD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A6FEABDC-8325-4360-A71A-0665CF45ABBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6FEABDC-8325-4360-A71A-0665CF45ABBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6FEABDC-8325-4360-A71A-0665CF45ABBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6FEABDC-8325-4360-A71A-0665CF45ABBD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A4BDF26A-FA52-4B38-BE2D-61AD57CBD264}
+	EndGlobalSection
+EndGlobal
