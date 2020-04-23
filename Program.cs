@@ -95,7 +95,7 @@ namespace cachet_monitor
                         }
                     }
                 }
-                if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters.component_id.HasValue).Count() < 1)
+                if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
                 {
                     try
                     {
@@ -113,6 +113,9 @@ namespace cachet_monitor
                     {
                         Console.WriteLine("Omitting duplicate component request");
                     }
+                } else
+                {
+                    Console.WriteLine("Tried to change component status for component managed by incident!");
                 }
             }
             Console.WriteLine("Actions ran");
