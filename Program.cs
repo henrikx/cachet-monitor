@@ -113,7 +113,7 @@ namespace cachet_monitor
                     {
                         Console.WriteLine("Omitting duplicate component request");
                     }
-                } else if (host.Actions.Where(x => x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
+                } else if (action.component_paramters != null && host.Actions.Where(x => x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
                 {
                     Console.WriteLine("Tried to change component status for component managed by incident!");
                 }
