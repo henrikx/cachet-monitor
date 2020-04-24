@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Collections;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace cachet_monitor
 {
@@ -56,15 +57,35 @@ namespace cachet_monitor
                             Dictionary<string, string> optionslevel2 = new Dictionary<string, string>();
 
                             optionslevel2.Add("Add", "");
-                            int hostindex = 0;
                             if (currentConfiguration.Hosts == null)
                             {
                                 currentConfiguration.Hosts = new List<Host>();
                             }
+                            List<List<Host>> groupedhostlist = new List<List<Host>>();
                             foreach (Host host in currentConfiguration.Hosts)
                             {
-                                hostindex++;
-                                optionslevel2.Add(host.path+"-"+hostindex, host.type);
+                                List<Host> samehosts = new List<Host>();
+                                if (groupedhostlist.Where(h => h.Contains(host)).Count() < 1)
+                                {
+                                    foreach (Host host_ in currentConfiguration.Hosts)
+                                    {
+                                        if (host_.path == host.path)
+                                        {
+                                            samehosts.Add(host_);
+                                        }
+                                    }
+                                    groupedhostlist.Add(samehosts);
+
+                                }
+                            }
+                            foreach (List<Host> groupedhost in groupedhostlist)
+                            {
+                                int hostindex = 0;
+                                foreach (Host host in groupedhost)
+                                {
+                                    hostindex++;
+                                    optionslevel2.Add(host.path + "|" + hostindex, host.type);
+                                }
                             }
                             KeyValuePair<string, string> selectedOptionLevel2 = RenderConfigurationDialogMenu(optionslevel2);
                             switch (selectedOptionLevel2.Key)
@@ -84,7 +105,7 @@ namespace cachet_monitor
                                 default: //LEVEL3STARTER Host Details
                                     bool backlevel3 = false;
                                     string userInputLevel3;
-                                    int SelectedHost = currentConfiguration.Hosts.FindIndex(host => host == currentConfiguration.Hosts.FindAll(host => host.path == selectedOptionLevel2.Key.Split("-")[0])[Convert.ToInt32(selectedOptionLevel2.Key.Split("-")[1])-1]); //Find index of userselected host
+                                    int SelectedHost = currentConfiguration.Hosts.FindIndex(host => host == currentConfiguration.Hosts.FindAll(host => host.path == selectedOptionLevel2.Key.Split("|")[0])[Convert.ToInt32(selectedOptionLevel2.Key.Split("|")[1])-1]); //Find index of userselected host
                                     while (!backlevel3) 
                                     {
                                         Dictionary<string, string> optionslevel3 = new Dictionary<string, string>()
