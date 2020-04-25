@@ -8,6 +8,13 @@ Built in .NET Core for multiplatform support.
 # Why?
 In my opinion none of the alternatives offered adequate configuration possibilites and were annoying to set up.
 
+Differences from the alternatives:
+* Support for choosing whether to fail on SSL.
+* Separate actions per failed expectation.
+* Specify all details about an action such as message and component status.
+* Link incidents to component statuses.
+* Other things I couldn't think of right now.
+
 # Usage
 `cachet-monitor` will run in daemon mode. `--config` should be ran if you do not already have a `./Config.json` file. This is considered regular operation.
 
