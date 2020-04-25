@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "cachet-monitor": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
