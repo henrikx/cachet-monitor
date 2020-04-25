@@ -37,6 +37,8 @@ cachet-monitor supports many configuration possibilites. You can set multiple ac
 If you use actions `update_component` and `create_incident` at the same time and you specify `component_id` in `create_incident` as the same id as in  `update_incident` then  `update_incident` will be ignored completely. `update_component` is mainly meant for updating components that might be affected by the current host's status as a side effect or if you don't want to create an incident.
 
 # Build Linux
+Binaries for Linux are available in releases.
+
 Make your active directory the project root (the folder with the .csproj file).
 Run 
 ```
