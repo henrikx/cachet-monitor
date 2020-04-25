@@ -95,7 +95,7 @@ namespace cachet_monitor
                         }
                     }
                 }
-                if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
+                if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters != null && x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
                 {
                     try
                     {
