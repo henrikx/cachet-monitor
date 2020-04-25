@@ -176,11 +176,81 @@ namespace cachet_monitor
                                                         case "Add":
                                                             Console.Write("Type (create_incident/update_component): ");
                                                             userInputLevel4 = Console.ReadLine();
+                                                            string userInputLevel4incident_title = "";
+                                                            string userInputLevel4incident_message = "";
+                                                            string userInputLevel4incident_solvedmessage = "";
+                                                            string userInputLevel4incident_status = "";
+                                                            string userInputLevel4incident_component_id = "";
+                                                            string userInputLevel4incident_component_status = "";
+                                                            string userInputLevel4component_id = "";
+                                                            string userInputLevel4component_status = "";
                                                             if (currentConfiguration.Hosts[SelectedHost].Actions == null)
                                                             {
                                                                 currentConfiguration.Hosts[SelectedHost].Actions = new List<Host.Action>();
                                                             }
-                                                            currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action() { actiontype = userInputLevel4 });
+                                                            if (userInputLevel4 == "create_incident")
+                                                            {
+                                                                Console.Write("Incident title (Title of incident):");
+                                                                userInputLevel4incident_title = Console.ReadLine();
+                                                                Console.Write("Incident message (Message of incident):");
+                                                                userInputLevel4incident_message = Console.ReadLine();
+                                                                Console.Write("Incident solved message (Message of incident when solved):");
+                                                                userInputLevel4incident_solvedmessage = Console.ReadLine();
+                                                                Console.Write("Incident status (Status of created incident (fixed=4/investigating=1/watching=3/identified=2)):");
+                                                                userInputLevel4incident_status = Console.ReadLine();
+                                                                Console.Write("Incident component id (Optional component ID):");
+                                                                userInputLevel4incident_component_id = Console.ReadLine();
+                                                                if (userInputLevel4component_id != "")
+                                                                {
+                                                                    Console.Write("Incident component status (Status of component (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4)):");
+                                                                    userInputLevel4incident_component_status = Console.ReadLine();
+                                                                    currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action()
+                                                                    {
+                                                                        actiontype = userInputLevel4,
+                                                                        incident_parameters = new Host.Action.IncidentParameters()
+                                                                        {
+                                                                            title = userInputLevel4incident_title,
+                                                                            message = userInputLevel4incident_message,
+                                                                            solvedmessage = userInputLevel4incident_solvedmessage,
+                                                                            componentstatus = Convert.ToInt32(userInputLevel4incident_component_status),
+                                                                            component_id = Convert.ToInt32(userInputLevel4incident_component_id),
+                                                                            status = Convert.ToInt32(userInputLevel4incident_status)
+                                                                        }
+                                                                    });
+                                                                } else
+                                                                {
+                                                                    currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action()
+                                                                    {
+                                                                        actiontype = userInputLevel4,
+                                                                        incident_parameters = new Host.Action.IncidentParameters()
+                                                                        {
+                                                                            title = userInputLevel4incident_title,
+                                                                            message = userInputLevel4incident_message,
+                                                                            solvedmessage = userInputLevel4incident_solvedmessage,
+                                                                            status = Convert.ToInt32(userInputLevel4incident_status)
+                                                                        }
+                                                                    });
+                                                                }
+
+                                                            } else if (userInputLevel4 == "update_component")
+                                                            {
+                                                                Console.Write("Component id (component ID):");
+                                                                userInputLevel4component_id = Console.ReadLine();
+                                                                Console.Write("Component status (Status of component (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4)):");
+                                                                userInputLevel4component_status = Console.ReadLine();
+
+                                                                currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action()
+                                                                {
+                                                                    actiontype = userInputLevel4,
+                                                                    component_paramters = new Host.Action.ComponentParamters()
+                                                                    {
+                                                                        component_id = Convert.ToInt32(userInputLevel4component_id),
+                                                                        component_status = Convert.ToInt32(userInputLevel4component_status)
+                                                                    }
+                                                                });
+
+                                                            }
+
                                                             break;
                                                         case "Exit":
                                                             backlevel4 = true;
@@ -205,6 +275,7 @@ namespace cachet_monitor
                                                                             { "incident_title", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.title},
                                                                             { "incident_message", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.message},
                                                                             { "incident_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.status.ToString()},
+                                                                            { "incident_solvedmessage", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage},
                                                                             { "incident_component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.component_id.ToString()},
                                                                             { "incident_component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus.ToString()},
                                                                         };
@@ -216,6 +287,7 @@ namespace cachet_monitor
                                                                     }
                                                                     optionslevel5 = new Dictionary<string, string>()
                                                                         {
+                                                                            { "Delete", "" },
                                                                             { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
                                                                             { "component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_id.ToString()},
                                                                             { "component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_status.ToString()}
@@ -232,6 +304,13 @@ namespace cachet_monitor
                                                                         currentConfiguration.Hosts[SelectedHost].Actions.Remove(currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction]);
                                                                         backlevel5 = true;
                                                                         break;
+                                                                    case "incident_solvedmessage":
+                                                                        Console.Write("Incident solved message (Message of incident when solved): ");
+                                                                        userInputLevel5 = Console.ReadLine();
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage = userInputLevel5;
+                                                                        backlevel5 = true;
+                                                                        break;
+
                                                                     case "actiontype":
                                                                         Console.Write("Action Type (create_incident/update_component): ");
                                                                         userInputLevel5 = Console.ReadLine();
@@ -271,7 +350,7 @@ namespace cachet_monitor
                                                                         currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_id = Convert.ToInt32(userInputLevel5);
                                                                         break;
                                                                     case "component_status":
-                                                                        Console.Write("Component status (fixed=4/investigating=1/watching=3/identified=2): ");
+                                                                        Console.Write("Component status (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4): ");
                                                                         userInputLevel5 = Console.ReadLine();
                                                                         currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_status = Convert.ToInt32(userInputLevel5);
                                                                         break;
