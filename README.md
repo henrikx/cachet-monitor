@@ -1,6 +1,6 @@
 # cachet-monitor
 
-**Due to heavy use of the incident updates feature only version 2.4 and up of Cachet is supported**
+**Due to heavy use of the incident updates feature, only version 2.4 and up of Cachet is supported**
 
 Cachet automated monitoring made easy.
 
