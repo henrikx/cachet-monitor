@@ -20,6 +20,9 @@ namespace cachet_monitor
                 if ((int)response.StatusCode >= statuscodeMin && (int)response.StatusCode <= statuscodeMax)
                 {
                     alive = true;
+                } else
+                {
+                    alive = false;
                 }
             } catch (WebException ex)
             {

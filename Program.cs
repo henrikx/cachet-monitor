@@ -58,6 +58,7 @@ namespace cachet_monitor
         }
 
         static Dictionary<int, string> trackedIncidents = new Dictionary<int, string>();
+        static Dictionary<int, string> failedComponents = new Dictionary<int, string>();
         static void RunActions(Configuration.Host host, bool failed)
         {
             Console.WriteLine("Running actions");
@@ -72,17 +73,22 @@ namespace cachet_monitor
                             Console.WriteLine("Service failed. Creating new incident");
                             int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus))["data"])["id"]));
                             trackedIncidents.Remove(id);
+                            failedComponents.Remove(id);
                             trackedIncidents.Add(id, host.path);
+                            if (action.incident_parameters.component_id != null)
+                            {
+                                failedComponents.Add(action.incident_parameters.component_id.Value, host.path);
+                            }
                         } else if (!failed && trackedIncidents.ContainsValue(host.path))
                         {
                             Console.WriteLine("Service back up. Setting incident as solved.");
                             int id = Convert.ToInt32((((api.CreateIncidentUpdate(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key, action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
-                            if (host.Actions.Where(x => x.incident_parameters.component_id.HasValue).Count() > 0)
+                            if (action.incident_parameters.component_id.HasValue)
                             {
                                 int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));
-
                             }
                             trackedIncidents.Remove(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key);
+                            trackedIncidents.Remove(failedComponents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key);
                         }
                     } catch (NullReferenceException)
                     {
@@ -99,14 +105,16 @@ namespace cachet_monitor
                 {
                     try
                     {
-                        if (failed)
+                        if (failed && !failedComponents.ContainsKey(action.component_paramters.component_id))
                         {
                             Console.WriteLine("Service failed. Setting component as failed");
-
+                            failedComponents.Remove(action.component_paramters.component_id);
+                            failedComponents.Add(action.component_paramters.component_id, host.path);
                             int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, action.component_paramters.component_status))["data"])["id"]));
-                        } else
+                        } else if (!failed && failedComponents.Contains(new KeyValuePair<int, string>(action.component_paramters.component_id, host.path)))
                         {
-                            Console.WriteLine("Service back up. Setting component as operational");
+                            Console.WriteLine("Service up. Setting component as operational");
+                            failedComponents.Remove(action.component_paramters.component_id);
                             int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, API.ComponentStatus.Operational))["data"])["id"]));
                         }
                     } catch (NullReferenceException)
