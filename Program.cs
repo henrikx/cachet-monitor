@@ -61,7 +61,6 @@ namespace cachet_monitor
         static Dictionary<int, string> failedComponents = new Dictionary<int, string>();
         static void RunActions(Configuration.Host host, bool failed)
         {
-            Console.WriteLine("Running actions");
             foreach (Configuration.Host.Action action in host.Actions)
             {
                 if (action.actiontype == Configuration.Host.Action.create_incident)
@@ -126,7 +125,6 @@ namespace cachet_monitor
                     Console.WriteLine("Tried to change component status for component managed by incident!");
                 }
             }
-            Console.WriteLine("Actions ran");
         }
     }
 }
