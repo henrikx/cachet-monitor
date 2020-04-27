@@ -26,12 +26,14 @@ namespace cachet_monitor
                 }
             } catch (WebException ex)
             {
-                Console.WriteLine($"Host {URL} failed with message {ex.Message}");
                 alive = false;
                 var response = ex.Response as HttpWebResponse;
                 if (response != null && (int)response.StatusCode >= statuscodeMin && (int)response.StatusCode <= statuscodeMax)
                 {
                     alive = true;
+                } else
+                {
+                    Console.WriteLine($"Host {URL} failed with message {ex.Message}");
                 }
             }
             previousRunResult = alive;
