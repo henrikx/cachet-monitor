@@ -72,7 +72,7 @@ namespace cachet_monitor
                             Console.WriteLine("Service failed. Creating new incident");
                             int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus))["data"])["id"]));
                             trackedIncidents.Remove(id);
-                            failedComponents.Remove(id);
+                            failedComponents.Remove(action.incident_parameters.component_id.Value);
                             trackedIncidents.Add(id, host.path);
                             if (action.incident_parameters.component_id != null)
                             {
