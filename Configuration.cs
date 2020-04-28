@@ -178,6 +178,7 @@ namespace cachet_monitor
                                                             userInputLevel4 = Console.ReadLine();
                                                             string userInputLevel4incident_title = "";
                                                             string userInputLevel4incident_message = "";
+                                                            string userInputLevel4failed_count = "";
                                                             string userInputLevel4incident_solvedmessage = "";
                                                             string userInputLevel4incident_status = "";
                                                             string userInputLevel4incident_component_id = "";
@@ -190,23 +191,27 @@ namespace cachet_monitor
                                                             }
                                                             if (userInputLevel4 == "create_incident")
                                                             {
-                                                                Console.Write("Incident title (Title of incident):");
+                                                                Console.Write("Incident title (Title of incident): ");
                                                                 userInputLevel4incident_title = Console.ReadLine();
-                                                                Console.Write("Incident message (Message of incident):");
+                                                                Console.Write("Incident message (Message of incident): ");
                                                                 userInputLevel4incident_message = Console.ReadLine();
-                                                                Console.Write("Incident solved message (Message of incident when solved):");
+                                                                Console.Write("How many times the host has failed before the action is ran: ");
+                                                                userInputLevel4failed_count = Console.ReadLine();
+                                                                Console.Write("Incident solved message (Message of incident when solved): ");
                                                                 userInputLevel4incident_solvedmessage = Console.ReadLine();
-                                                                Console.Write("Incident status (Status of created incident (fixed=4/investigating=1/watching=3/identified=2)):");
+                                                                Console.Write("Incident status (Status of created incident (fixed=4/investigating=1/watching=3/identified=2)): ");
                                                                 userInputLevel4incident_status = Console.ReadLine();
                                                                 Console.Write("Incident component id (Optional component ID):");
                                                                 userInputLevel4incident_component_id = Console.ReadLine();
+
                                                                 if (userInputLevel4component_id != "")
                                                                 {
-                                                                    Console.Write("Incident component status (Status of component (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4)):");
+                                                                    Console.Write("Incident component status (Status of component (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4)): ");
                                                                     userInputLevel4incident_component_status = Console.ReadLine();
                                                                     currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action()
                                                                     {
                                                                         actiontype = userInputLevel4,
+                                                                        failed_count = Convert.ToInt32(userInputLevel4failed_count),
                                                                         incident_parameters = new Host.Action.IncidentParameters()
                                                                         {
                                                                             title = userInputLevel4incident_title,
@@ -216,12 +221,13 @@ namespace cachet_monitor
                                                                             component_id = Convert.ToInt32(userInputLevel4incident_component_id),
                                                                             status = Convert.ToInt32(userInputLevel4incident_status)
                                                                         }
-                                                                    });
+                                                                    }) ;
                                                                 } else
                                                                 {
                                                                     currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action()
                                                                     {
                                                                         actiontype = userInputLevel4,
+                                                                        failed_count = Convert.ToInt32(userInputLevel4failed_count),
                                                                         incident_parameters = new Host.Action.IncidentParameters()
                                                                         {
                                                                             title = userInputLevel4incident_title,
@@ -238,16 +244,20 @@ namespace cachet_monitor
                                                                 userInputLevel4component_id = Console.ReadLine();
                                                                 Console.Write("Component status (Status of component (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4)):");
                                                                 userInputLevel4component_status = Console.ReadLine();
+                                                                Console.Write("How many times the host has failed before the action is ran: ");
+                                                                userInputLevel4failed_count = Console.ReadLine();
+
 
                                                                 currentConfiguration.Hosts[SelectedHost].Actions.Add(new Host.Action()
                                                                 {
                                                                     actiontype = userInputLevel4,
+                                                                    failed_count = Convert.ToInt32(userInputLevel4failed_count),
                                                                     component_paramters = new Host.Action.ComponentParamters()
                                                                     {
                                                                         component_id = Convert.ToInt32(userInputLevel4component_id),
                                                                         component_status = Convert.ToInt32(userInputLevel4component_status)
                                                                     }
-                                                                });
+                                                                }) ;
 
                                                             }
 
@@ -269,16 +279,17 @@ namespace cachet_monitor
                                                                         currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters = new Host.Action.IncidentParameters();
                                                                     }
                                                                     optionslevel5 = new Dictionary<string, string>()
-                                                                        {
-                                                                            { "Delete", "" },
-                                                                            { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
-                                                                            { "incident_title", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.title},
-                                                                            { "incident_message", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.message},
-                                                                            { "incident_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.status.ToString()},
-                                                                            { "incident_solvedmessage", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage},
-                                                                            { "incident_component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.component_id.ToString()},
-                                                                            { "incident_component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus.ToString()},
-                                                                        };
+                                                                    {
+                                                                        { "Delete", "" },
+                                                                        { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
+                                                                        { "failed_count", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].failed_count.ToString()},
+                                                                        { "incident_title", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.title},
+                                                                        { "incident_message", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.message},
+                                                                        { "incident_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.status.ToString()},
+                                                                        { "incident_solvedmessage", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage},
+                                                                        { "incident_component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.component_id.ToString()},
+                                                                        { "incident_component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus.ToString()},
+                                                                    };
                                                                 } else if (currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype == "update_component")
                                                                 {
                                                                     if (currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters == null)
@@ -286,12 +297,13 @@ namespace cachet_monitor
                                                                         currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters = new Host.Action.ComponentParamters();
                                                                     }
                                                                     optionslevel5 = new Dictionary<string, string>()
-                                                                        {
-                                                                            { "Delete", "" },
-                                                                            { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
-                                                                            { "component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_id.ToString()},
-                                                                            { "component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_status.ToString()}
-                                                                        };
+                                                                    {
+                                                                        { "Delete", "" },
+                                                                        { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
+                                                                        { "failed_count", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].failed_count.ToString()},
+                                                                        { "component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_id.ToString()},
+                                                                        { "component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_status.ToString()}
+                                                                    };
                                                                 } else
                                                                 {
                                                                     currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype = "create_incident";
@@ -302,6 +314,12 @@ namespace cachet_monitor
                                                                 {
                                                                     case "Delete":
                                                                         currentConfiguration.Hosts[SelectedHost].Actions.Remove(currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction]);
+                                                                        backlevel5 = true;
+                                                                        break;
+                                                                    case "failed_count":
+                                                                        Console.Write("How many times the host has failed before the action is ran: ");
+                                                                        userInputLevel5 = Console.ReadLine();
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].failed_count = Convert.ToInt32(userInputLevel5);
                                                                         backlevel5 = true;
                                                                         break;
                                                                     case "incident_solvedmessage":
@@ -437,16 +455,15 @@ namespace cachet_monitor
 
                 try
                 {
-
                     currentConfiguration = JsonSerializer.Deserialize<Configuration>(File.ReadAllText(path));
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error occured while loading configuration:");
                     if (ex is FileNotFoundException)
                     {
                         return currentConfiguration;
                     }
+                    Console.WriteLine("Error occured while loading configuration:");
                     throw ex;
                 }
             }
@@ -486,6 +503,7 @@ namespace cachet_monitor
             {
                 public string actiontype { get; set; }
                 public static string create_incident = "create_incident";
+                public int failed_count { get; set; } = 1;
                 public IncidentParameters incident_parameters { get; set; }
                 public class IncidentParameters
                 {

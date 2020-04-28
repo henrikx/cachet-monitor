@@ -20,6 +20,10 @@ namespace cachet_monitor
                 return;
             } else
             {
+                failedComponents = ((Dictionary<string,object>) PersistentData.LoadPersistentData()[0]).ToDictionary(x => x.Key, x=> x.Value.ToString());
+                trackedIncidents = ((Dictionary<string, object>)PersistentData.LoadPersistentData()[1]).ToDictionary(x => x.Key, x => x.Value.ToString());
+                hostFailCount = ((Dictionary<string, object>)PersistentData.LoadPersistentData()[2]).ToDictionary(x => x.Key, x => Convert.ToInt32(x.Value));
+
                 while (true)
                 {
                     CheckHosts();
@@ -57,74 +61,97 @@ namespace cachet_monitor
             }
         }
 
-        static Dictionary<int, string> trackedIncidents = new Dictionary<int, string>();
-        static Dictionary<int, string> failedComponents = new Dictionary<int, string>();
+        static Dictionary<string, int> hostFailCount = new Dictionary<string, int>();
+        static Dictionary<string, string> trackedIncidents = new Dictionary<string, string>();
+        static Dictionary<string, string> failedComponents = new Dictionary<string, string>();
         static void RunActions(Configuration.Host host, bool failed)
         {
+            if (failed && !hostFailCount.ContainsKey(host.path))
+            {
+                hostFailCount.Add(host.path, 0);
+            }
+            if (failed)
+            {
+                hostFailCount[host.path]++;
+            }
             foreach (Configuration.Host.Action action in host.Actions)
             {
-                if (action.actiontype == Configuration.Host.Action.create_incident)
+                if (!hostFailCount.ContainsKey(host.path) || hostFailCount[host.path] >= action.failed_count)
                 {
-                    try
+                    if (action.actiontype == Configuration.Host.Action.create_incident)
                     {
-                        if (failed && !trackedIncidents.ContainsValue(host.path))
+                        try
                         {
-                            Console.WriteLine("Service failed. Creating new incident");
-                            int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus))["data"])["id"]));
-                            trackedIncidents.Remove(id);
-                            failedComponents.Remove(action.incident_parameters.component_id.Value);
-                            trackedIncidents.Add(id, host.path);
-                            if (action.incident_parameters.component_id != null)
+                            if (failed && !trackedIncidents.ContainsValue(host.path))
                             {
-                                failedComponents.Add(action.incident_parameters.component_id.Value, host.path);
+                                Console.WriteLine("Service failed. Creating new incident");
+                                int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus))["data"])["id"]));
+                                trackedIncidents.Remove(id.ToString());
+                                failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
+                                trackedIncidents.Add(id.ToString(), host.path);
+                                if (action.incident_parameters.component_id != null)
+                                {
+                                    failedComponents.Add(action.incident_parameters.component_id.Value.ToString(), host.path);
+                                }
                             }
-                        } else if (!failed && trackedIncidents.ContainsValue(host.path))
-                        {
-                            Console.WriteLine("Service back up. Setting incident as solved.");
-                            int id = Convert.ToInt32((((api.CreateIncidentUpdate(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key, action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
-                            if (action.incident_parameters.component_id.HasValue)
+                            else if (!failed && trackedIncidents.ContainsValue(host.path))
                             {
-                                int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));
+                                Console.WriteLine("Service back up. Setting incident as solved.");
+                                hostFailCount.Remove(host.path);
+                                int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
+                                if (action.incident_parameters.component_id.HasValue)
+                                {
+                                    int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));
+                                    failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
+                                }
+                                trackedIncidents.Remove(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key);
                             }
-                            trackedIncidents.Remove(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key);
-                            trackedIncidents.Remove(failedComponents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key);
                         }
-                    } catch (NullReferenceException)
-                    {
-                        Console.WriteLine("Omitting duplicate request");
-                    } catch (System.Net.WebException ex)
-                    {
-                        if (Convert.ToInt32((ex.Response as System.Net.HttpWebResponse).StatusCode) == 404)
+                        catch (NullReferenceException)
                         {
-                            Console.WriteLine("Webserver returned 404 while trying to create an incident update. It is likely that a user deleted the incident.");
+                            Console.WriteLine("Omitting duplicate request");
+                        }
+                        catch (System.Net.WebException ex)
+                        {
+                            if (Convert.ToInt32((ex.Response as System.Net.HttpWebResponse).StatusCode) == 404)
+                            {
+                                Console.WriteLine("Webserver returned 404 while trying to create an incident update. It is likely that a user deleted the incident.");
+                            }
                         }
                     }
-                }
-                if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters != null && x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
-                {
-                    try
+                    if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters != null && x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
                     {
-                        if (failed && !failedComponents.ContainsKey(action.component_paramters.component_id))
+                        try
                         {
-                            Console.WriteLine("Service failed. Setting component as failed");
-                            failedComponents.Remove(action.component_paramters.component_id);
-                            failedComponents.Add(action.component_paramters.component_id, host.path);
-                            int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, action.component_paramters.component_status))["data"])["id"]));
-                        } else if (!failed && failedComponents.Contains(new KeyValuePair<int, string>(action.component_paramters.component_id, host.path)))
-                        {
-                            Console.WriteLine("Service up. Setting component as operational");
-                            failedComponents.Remove(action.component_paramters.component_id);
-                            int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, API.ComponentStatus.Operational))["data"])["id"]));
+                            if (failed && !failedComponents.ContainsKey(action.component_paramters.component_id.ToString()))
+                            {
+                                Console.WriteLine("Service failed. Setting component as failed");
+                                failedComponents.Remove(action.component_paramters.component_id.ToString());
+                                failedComponents.Add(action.component_paramters.component_id.ToString(), host.path);
+                                int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, action.component_paramters.component_status))["data"])["id"]));
+                            }
+                            else if (!failed && failedComponents.Contains(new KeyValuePair<string, string>(action.component_paramters.component_id.ToString(), host.path)))
+                            {
+                                Console.WriteLine("Service up. Setting component as operational");
+                                failedComponents.Remove(action.component_paramters.component_id.ToString());
+                                int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, API.ComponentStatus.Operational))["data"])["id"]));
+                            }
                         }
-                    } catch (NullReferenceException)
-                    {
-                        Console.WriteLine("Omitting duplicate component request");
+                        catch (NullReferenceException)
+                        {
+                            Console.WriteLine("Omitting duplicate component request");
+                        }
                     }
-                } else if (action.component_paramters != null && host.Actions.Where(x => x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
+                    else if (action.component_paramters != null && host.Actions.Where(x => x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
+                    {
+                        Console.WriteLine("Tried to change component status for component managed by incident!");
+                    }
+                } else
                 {
-                    Console.WriteLine("Tried to change component status for component managed by incident!");
+                    Console.WriteLine($"{host.path} failed {hostFailCount[host.path]}/{action.failed_count}");
                 }
             }
+            PersistentData.SavePersistentData(failedComponents, trackedIncidents, hostFailCount);
         }
     }
 }
