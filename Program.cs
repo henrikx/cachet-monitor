@@ -6,13 +6,17 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace cachet_monitor
 {
     class Program
     {
+        static bool stopping = false;
+        static bool isstopped = false;
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.ProcessExit += OnExitEventHandler;
             if (args.Count() > 0 && args[0] == "--config")
             {
                 Configuration.GetConfiguration();
@@ -29,35 +33,52 @@ namespace cachet_monitor
                     CheckHosts();
                     Thread.Sleep(Configuration.GetConfiguration().Interval * 1000);
                 }
-
             }
         }
+
+        static void OnExitEventHandler(object sender, EventArgs e)
+        {
+            stopping = true;
+            while (!isstopped)
+            {
+                Thread.Sleep(1000);
+            }
+            Environment.Exit(0);
+        }
+
         static API api = new API();
         static void CheckHosts()
         {
             foreach (Configuration.Host host in Configuration.GetConfiguration().Hosts)
             {
-                if (host.type == Configuration.Host.Types.http)
+                if (!stopping)
                 {
-                    Statuscheck statuscheck = new Statuscheck();
-                    int statuscodeMin = Convert.ToInt32(host.ExpectedStatusCodeRange.Substring(0, 3));
-                    int statuscodeMax = Convert.ToInt32(host.ExpectedStatusCodeRange.Substring(4, 3));
-                    statuscheck.VerifySSL = host.verifySSL;
-                    Console.WriteLine("Checking host: " + host.path);
-                    bool success = statuscheck.CheckHTTP(host.path, statuscodeMin, statuscodeMax);
-                    if (success == false)
+                    if (host.type == Configuration.Host.Types.http)
                     {
-                        RunActions(host, true);
-                    } else
-                    {
-                        RunActions(host, false);
+                        Statuscheck statuscheck = new Statuscheck();
+                        int statuscodeMin = Convert.ToInt32(host.ExpectedStatusCodeRange.Substring(0, 3));
+                        int statuscodeMax = Convert.ToInt32(host.ExpectedStatusCodeRange.Substring(4, 3));
+                        statuscheck.VerifySSL = host.verifySSL;
+                        Console.WriteLine("Checking host: " + host.path);
+                        bool success = statuscheck.CheckHTTP(host.path, statuscodeMin, statuscodeMax);
+                        if (success == false)
+                        {
+                            RunActions(host, true);
+                        }
+                        else
+                        {
+                            RunActions(host, false);
+                        }
+
                     }
-
-                } else if (host.type == Configuration.Host.Types.ping)
+                    else if (host.type == Configuration.Host.Types.ping)
+                    {
+                        throw new NotImplementedException();
+                    }
+                } else
                 {
-                    throw new NotImplementedException();
+                    isstopped = true;
                 }
-
             }
         }
 
