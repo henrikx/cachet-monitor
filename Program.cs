@@ -13,10 +13,12 @@ namespace cachet_monitor
     class Program
     {
         static bool stopping = false;
-        static bool isstopped = false;
+        static bool isclean = false;
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.ProcessExit += OnExitEventHandler;
+            Console.CancelKeyPress += OnCancelKeyPressedEventHandler;
+
             if (args.Count() > 0 && args[0] == "--config")
             {
                 Configuration.GetConfiguration();
@@ -28,24 +30,33 @@ namespace cachet_monitor
                 trackedIncidents = ((Dictionary<string, object>)PersistentData.LoadPersistentData()[1]).ToDictionary(x => x.Key, x => x.Value.ToString());
                 hostFailCount = ((Dictionary<string, object>)PersistentData.LoadPersistentData()[2]).ToDictionary(x => x.Key, x => Convert.ToInt32(x.Value));
 
-                while (true)
+                while (true && !stopping)
                 {
                     CheckHosts();
-                    Thread.Sleep(Configuration.GetConfiguration().Interval * 1000);
+                    if (!stopping)
+                    {
+                        Thread.Sleep(Configuration.GetConfiguration().Interval * 1000);
+                    }
                 }
+                isclean = true;
             }
         }
 
         static void OnExitEventHandler(object sender, EventArgs e)
         {
             stopping = true;
-            while (!isstopped)
+            Console.WriteLine("Shutting down...");
+            while (!isclean)
             {
                 Thread.Sleep(1000);
             }
+            Environment.ExitCode = 0;
+        }
+        static void OnCancelKeyPressedEventHandler(object sender, EventArgs e)
+        {
+            Console.WriteLine("Cancel key pressed");
             Environment.Exit(0);
         }
-
         static API api = new API();
         static void CheckHosts()
         {
@@ -77,7 +88,7 @@ namespace cachet_monitor
                     }
                 } else
                 {
-                    isstopped = true;
+                    break;
                 }
             }
         }
