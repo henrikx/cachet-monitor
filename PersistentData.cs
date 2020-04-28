@@ -32,7 +32,7 @@ namespace cachet_monitor
         {
             List<dynamic> dataLoaded = new List<dynamic>()
             {
-                { new Dictionary<string, string>() }, { new Dictionary<string, string>() }, { new Dictionary<string, int>() } //create data structure in case file doesn't exist. prevent nullreferenceexception
+                { new Dictionary<string, object>() }, { new Dictionary<string, object>() }, { new Dictionary<string, object>() } //create data structure in case file doesn't exist. prevent nullreferenceexception
             };
             try
             {
