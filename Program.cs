@@ -23,6 +23,7 @@ namespace cachet_monitor
             {
                 Configuration.GetConfiguration();
                 Configuration.ConfigurationDialog();
+                isclean = true;
                 return;
             } else
             {
