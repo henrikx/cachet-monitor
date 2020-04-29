@@ -15,6 +15,6 @@ FROM build AS publish
 RUN dotnet publish "cachet-monitor.csproj" -c Release -o /app/publish
 
 FROM base AS final
-WORKDIR /app
+WORKDIR /data
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "cachet-monitor.dll"]
+ENTRYPOINT ["dotnet", "/app/cachet-monitor.dll"]
