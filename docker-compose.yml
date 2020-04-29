@@ -1,7 +1,6 @@
 version: '3'
 services:
   cachet-monitor:
-  # This docker-compose.yml file should exist OUTSIDE of the source directory! Otherwise change paths
     build: ./
     volumes:
-      - ./data/:/data/
+      - ./data/:/app-data/
