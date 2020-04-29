@@ -30,7 +30,7 @@ cd cachet-monitor
 #New installations will need a config file. Enter the configuration CLI like so:
 docker-compose run --rm cachet-monitor --config
 #When you've saved and exited your configuration, you can run the service
-docker-compose run -d
+docker-compose up -d
 ```
 # Usage
 `cachet-monitor` will run in daemon mode. `--config` should be ran if you do not already have a `./Config.json` file. This is considered regular operation.
