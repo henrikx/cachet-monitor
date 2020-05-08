@@ -142,7 +142,10 @@ namespace cachet_monitor
                                     int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));
                                     failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
                                 }
-                                trackedIncidents.Remove(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key);
+                                foreach (KeyValuePair<string,string> item in trackedIncidents.Where(x => x.Value.Contains(host.path)))
+                                {
+                                    trackedIncidents.Remove(item.Key);
+                                }
                             }
                         }
                         catch (NullReferenceException)
