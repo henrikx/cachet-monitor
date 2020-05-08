@@ -106,6 +106,12 @@ namespace cachet_monitor
             if (failed)
             {
                 hostFailCount[host.path]++;
+            } else
+            {
+                if (hostFailCount.ContainsKey(host.path))
+                {
+                    hostFailCount.Remove(host.path);
+                }
             }
             foreach (Configuration.Host.Action action in host.Actions)
             {
