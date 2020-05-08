@@ -61,8 +61,10 @@ namespace cachet_monitor
         static API api = new API();
         static void CheckHosts()
         {
+            int hostIndex = 0;
             foreach (Configuration.Host host in Configuration.GetConfiguration().Hosts)
             {
+                hostIndex++;
                 if (!stopping)
                 {
                     if (host.type == Configuration.Host.Types.http)
@@ -73,6 +75,7 @@ namespace cachet_monitor
                         statuscheck.VerifySSL = host.verifySSL;
                         Console.WriteLine("Checking host: " + host.path);
                         bool success = statuscheck.CheckHTTP(host.path, statuscodeMin, statuscodeMax);
+                        host.path += "-" + hostIndex.ToString();
                         if (success == false)
                         {
                             RunActions(host, true);
