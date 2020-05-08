@@ -523,6 +523,10 @@ namespace cachet_monitor
                     public int component_status { get; set; }
                 }
             }
+            public Host Clone()
+            {
+                return this.MemberwiseClone() as Host;
+            }
         }
     }
 }

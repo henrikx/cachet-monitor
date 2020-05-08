@@ -16,6 +16,7 @@ Differences from the alternatives:
 * Separate actions per failed expectation.
 * Specify all details about an action such as message and component status.
 * Link incidents to component statuses.
+* (Experimental) Add 
 * Other things I couldn't think of right now.
 
 # Deploying with Docker-Compose
