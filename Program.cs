@@ -136,7 +136,6 @@ namespace cachet_monitor
                             else if (!failed && trackedIncidents.ContainsValue(host.path))
                             {
                                 Console.WriteLine("Service back up. Setting incident as solved.");
-                                hostFailCount.Remove(host.path);
                                 int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
                                 if (action.incident_parameters.component_id.HasValue)
                                 {
