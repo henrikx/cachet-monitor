@@ -65,8 +65,13 @@ namespace cachet_monitor
             foreach (Configuration.Host host in Configuration.GetConfiguration().Hosts)
             {
                 hostIndex++;
-                Configuration.Host localHost = host.Clone(); //Prevent modification of actual value. (Keep values in foreach local).
-                localHost.path += "-" + hostIndex.ToString();
+                if (host.id == null)
+                {
+                    host.id = hostIndex.ToString();
+                }
+            }
+            foreach (Configuration.Host host in Configuration.GetConfiguration().Hosts)
+            {
                 if (!stopping)
                 {
                     if (host.type == Configuration.Host.Types.http)
@@ -79,11 +84,11 @@ namespace cachet_monitor
                         bool success = statuscheck.CheckHTTP(host.path, statuscodeMin, statuscodeMax);
                         if (success == false)
                         {
-                            RunActions(localHost, true);
+                            RunActions(host, true);
                         }
                         else
                         {
-                            RunActions(localHost, false);
+                            RunActions(host, false);
                         }
 
                     }
@@ -103,50 +108,50 @@ namespace cachet_monitor
         static Dictionary<string, string> failedComponents = new Dictionary<string, string>();
         static void RunActions(Configuration.Host host, bool failed)
         {
-            if (failed && !hostFailCount.ContainsKey(host.path))
+            if (failed && !hostFailCount.ContainsKey(host.id))
             {
-                hostFailCount.Add(host.path, 0);
+                hostFailCount.Add(host.id, 0);
             }
             if (failed)
             {
-                hostFailCount[host.path]++;
+                hostFailCount[host.id]++;
             } else
             {
-                if (hostFailCount.ContainsKey(host.path))
+                if (hostFailCount.ContainsKey(host.id))
                 {
-                    hostFailCount.Remove(host.path);
+                    hostFailCount.Remove(host.id);
                 }
             }
             foreach (Configuration.Host.Action action in host.Actions)
             {
-                if (!hostFailCount.ContainsKey(host.path) || hostFailCount[host.path] >= action.failed_count)
+                if (!hostFailCount.ContainsKey(host.id) || hostFailCount[host.id] >= action.failed_count)
                 {
                     if (action.actiontype == Configuration.Host.Action.create_incident)
                     {
                         try
                         {
-                            if (failed && !trackedIncidents.ContainsValue(host.path))
+                            if (failed && !trackedIncidents.ContainsValue(host.id))
                             {
                                 Console.WriteLine("Service failed. Creating new incident");
                                 int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus))["data"])["id"]));
                                 trackedIncidents.Remove(id.ToString());
                                 failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
-                                trackedIncidents.Add(id.ToString(), host.path);
+                                trackedIncidents.Add(id.ToString(), host.id);
                                 if (action.incident_parameters.component_id != null)
                                 {
-                                    failedComponents.Add(action.incident_parameters.component_id.Value.ToString(), host.path);
+                                    failedComponents.Add(action.incident_parameters.component_id.Value.ToString(), host.id);
                                 }
                             }
-                            else if (!failed && trackedIncidents.ContainsValue(host.path))
+                            else if (!failed && trackedIncidents.ContainsValue(host.id))
                             {
                                 Console.WriteLine("Service back up. Setting incident as solved.");
-                                int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.path)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
+                                int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
                                 if (action.incident_parameters.component_id.HasValue)
                                 {
                                     int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));
                                     failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
                                 }
-                                foreach (KeyValuePair<string,string> item in trackedIncidents.Where(x => x.Value.Contains(host.path)))
+                                foreach (KeyValuePair<string,string> item in trackedIncidents.Where(x => x.Value.Contains(host.id)))
                                 {
                                     trackedIncidents.Remove(item.Key);
                                 }
@@ -172,10 +177,10 @@ namespace cachet_monitor
                             {
                                 Console.WriteLine("Service failed. Setting component as failed");
                                 failedComponents.Remove(action.component_paramters.component_id.ToString());
-                                failedComponents.Add(action.component_paramters.component_id.ToString(), host.path);
+                                failedComponents.Add(action.component_paramters.component_id.ToString(), host.id);
                                 int id = Convert.ToInt32((((api.UpdateComponentStatus(action.component_paramters.component_id, action.component_paramters.component_status))["data"])["id"]));
                             }
-                            else if (!failed && failedComponents.Contains(new KeyValuePair<string, string>(action.component_paramters.component_id.ToString(), host.path)))
+                            else if (!failed && failedComponents.Contains(new KeyValuePair<string, string>(action.component_paramters.component_id.ToString(), host.id)))
                             {
                                 Console.WriteLine("Service up. Setting component as operational");
                                 failedComponents.Remove(action.component_paramters.component_id.ToString());
@@ -193,7 +198,7 @@ namespace cachet_monitor
                     }
                 } else
                 {
-                    Console.WriteLine($"{host.path} failed {hostFailCount[host.path]}/{action.failed_count}");
+                    Console.WriteLine($"{host.id} failed {hostFailCount[host.id]}/{action.failed_count}");
                 }
             }
             PersistentData.SavePersistentData(failedComponents, trackedIncidents, hostFailCount);

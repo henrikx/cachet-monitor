@@ -4,18 +4,32 @@ using System.Text;
 using System.Text.Json;
 using System.IO;
 using System.Text.Json.Serialization;
+using System.Security.Cryptography;
 
 namespace cachet_monitor
 {
     class PersistentData
     {
+        private static string GetConfigFileHash()
+        {
+            SHA256 Sha256 = SHA256.Create();
+            byte[] ShaBytes;
+            using (FileStream stream = File.OpenRead("./Config.json"))
+            {
+                ShaBytes = Sha256.ComputeHash(stream);
+            }
+            string result = "";
+            foreach (byte b in ShaBytes) result += b.ToString("x2");
+            return result;
+        }
         public static void SavePersistentData(Dictionary<string, string> failedComponents, Dictionary<string, string> trackedIncidents, Dictionary<string, int> hostFailedCount, string path = "./Data.json")
         {
             List<dynamic> dataToSave = new List<dynamic>()
             {
                 { failedComponents },
                 { trackedIncidents },
-                { hostFailedCount }
+                { hostFailedCount },
+                { GetConfigFileHash() }
             };
             try
             {
@@ -28,6 +42,8 @@ namespace cachet_monitor
             }
 
         }
+
+
         public static List<dynamic> LoadPersistentData(string path = "./Data.json")
         {
             List<dynamic> dataLoaded = new List<dynamic>()
@@ -37,7 +53,14 @@ namespace cachet_monitor
             try
             {
                 dataLoaded = JsonSerializer.Deserialize<List<dynamic>>(File.ReadAllText(path), new JsonSerializerOptions() { Converters = { new ObjectToInferredTypesConverter() } });
-                return dataLoaded;
+                if (dataLoaded.Count < 4 /*In case old datapersitency file*/ || GetConfigFileHash() == (string)dataLoaded[3])
+                {
+                    return dataLoaded;
+                } else
+                {
+                    Console.WriteLine("New configuration file detected. Hash did not match.");
+                    return dataLoaded;
+                }
             }
             catch (Exception ex)
             {

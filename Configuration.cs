@@ -488,6 +488,7 @@ namespace cachet_monitor
         public List<Host> Hosts { get; set; }
         public class Host
         {
+            [field: NonSerialized] public string id { get; set; }
             public string path { get; set; }
             public string type { get; set; }
             public static class Types
