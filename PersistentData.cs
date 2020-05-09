@@ -46,29 +46,29 @@ namespace cachet_monitor
 
         public static List<dynamic> LoadPersistentData(string path = "./Data.json")
         {
-            List<dynamic> dataLoaded = new List<dynamic>()
+            List<dynamic> dataPreLoad = new List<dynamic>()
             {
                 { new Dictionary<string, object>() }, { new Dictionary<string, object>() }, { new Dictionary<string, object>() } //create data structure in case file doesn't exist. prevent nullreferenceexception
             };
             try
             {
-                dataLoaded = JsonSerializer.Deserialize<List<dynamic>>(File.ReadAllText(path), new JsonSerializerOptions() { Converters = { new ObjectToInferredTypesConverter() } });
+                List <dynamic> dataLoaded = JsonSerializer.Deserialize<List<dynamic>>(File.ReadAllText(path), new JsonSerializerOptions() { Converters = { new ObjectToInferredTypesConverter() } });
                 if (dataLoaded.Count < 4 /*In case old datapersitency file*/ || GetConfigFileHash() == (string)dataLoaded[3])
                 {
                     return dataLoaded;
                 } else
                 {
-                    Console.WriteLine("New configuration file detected. Hash did not match.");
-                    return dataLoaded;
+                    Console.WriteLine("New configuration file detected. Hash did not match. Using empty database.");
+                    return dataPreLoad;
                 }
             }
             catch (Exception ex)
             {
                 if (ex is FileNotFoundException)
                 {
-                    return dataLoaded;
+                    return dataPreLoad;
                 }
-                Console.WriteLine("Error occured while loading data:");
+                Console.WriteLine("Error occured while loading data. File is likely corrupt (delete it). Exception:");
                 throw ex;
             }
         }
