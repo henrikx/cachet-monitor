@@ -16,6 +16,7 @@ Differences from the alternatives:
 * Separate actions per failed expectation. (Experimental: separate actions per failed expectation for the same path)
 * Specify all details about an action such as message and component status.
 * Link incidents to component statuses.
+* Edit component statuses in Cachet without being overwritten. (Overwrites only happen if there has been an update to service status).
 * Other things I couldn't think of right now.
 
 # Deploying with Docker-Compose
