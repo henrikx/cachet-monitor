@@ -145,13 +145,13 @@ namespace cachet_monitor
                             else if (!failed && trackedIncidents.ContainsValue(host.id))
                             {
                                 Console.WriteLine("Service back up. Setting incident as solved.");
-                                int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
-                                api.UpdateIncident(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), stickied: false);
                                 if (action.incident_parameters.component_id.HasValue)
                                 {
                                     int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));
                                     failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
                                 }
+                                int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
+                                api.UpdateIncident(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), stickied: false);
                                 foreach (KeyValuePair<string,string> item in trackedIncidents.Where(x => x.Value.Contains(host.id)))
                                 {
                                     trackedIncidents.Remove(item.Key);
