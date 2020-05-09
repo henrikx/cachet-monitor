@@ -133,7 +133,7 @@ namespace cachet_monitor
                             if (failed && !trackedIncidents.ContainsValue(host.id))
                             {
                                 Console.WriteLine("Service failed. Creating new incident");
-                                int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus))["data"])["id"]));
+                                int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus, true))["data"])["id"]));
                                 trackedIncidents.Remove(id.ToString());
                                 failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
                                 trackedIncidents.Add(id.ToString(), host.id);
@@ -146,6 +146,7 @@ namespace cachet_monitor
                             {
                                 Console.WriteLine("Service back up. Setting incident as solved.");
                                 int id = Convert.ToInt32((((api.CreateIncidentUpdate(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), action.incident_parameters.solvedmessage, API.Status.Fixed))["data"])["id"]));
+                                api.UpdateIncident(Convert.ToInt32(trackedIncidents.Where(x => x.Value.Contains(host.id)).ElementAt(0).Key), stickied: false);
                                 if (action.incident_parameters.component_id.HasValue)
                                 {
                                     int id2 = Convert.ToInt32((((api.UpdateComponentStatus(action.incident_parameters.component_id.Value, API.ComponentStatus.Operational))["data"])["id"]));

@@ -12,11 +12,11 @@ namespace cachet_monitor
         public string LastActionRequest { get; private set; }
 
 
-        public Dictionary<string, dynamic> CreateIncident(string title, string message, int status, int visible, int? componentid = null, int? componentstatus = null)
+        public Dictionary<string, dynamic> CreateIncident(string title, string message, int status, int visible, int? componentid = null, int? componentstatus = null, bool? stickied = null)
         {
             string URL = Configuration.GetConfiguration().BaseURL + "incidents";
             string API = Configuration.GetConfiguration().APIKey;
-            string JSON = JsonSerializer.Serialize<Dictionary<string,dynamic>>(new Dictionary<string, dynamic> { { "name", title }, { "message", message }, { "status", status }, { "visible", visible }, { "component_id", componentid }, { "component_status", componentstatus } }, new JsonSerializerOptions() { IgnoreNullValues = true });
+            string JSON = JsonSerializer.Serialize<Dictionary<string,dynamic>>(new Dictionary<string, dynamic> { { "name", title }, { "message", message }, { "status", status }, { "visible", visible }, { "component_id", componentid }, { "component_status", componentstatus }, { "stickied", stickied } }, new JsonSerializerOptions() { IgnoreNullValues = true });
             LastActionRequest = JSON;
             HTTPBase apiBase = new HTTPBase();
             var options = new JsonSerializerOptions();
@@ -25,11 +25,11 @@ namespace cachet_monitor
 
             return response;
         }
-        public Dictionary<string, dynamic> UpdateIncident(int id, string title = null, string message = null, int? status = null, int? visible = null, int? componentid = null, int? componentstatus = null)
+        public Dictionary<string, dynamic> UpdateIncident(int id, string title = null, string message = null, int? status = null, int? visible = null, int? componentid = null, int? componentstatus = null, bool? stickied = null)
         {
             string URL = Configuration.GetConfiguration().BaseURL + "incidents/" + id.ToString();
             string API = Configuration.GetConfiguration().APIKey;
-            string JSON = JsonSerializer.Serialize<Dictionary<string, dynamic>>(new Dictionary<string, dynamic> { { "name", title }, { "message", message }, { "status", status }, { "visible", visible }, { "component_id", componentid }, { "component_status", componentstatus } }, new JsonSerializerOptions() { IgnoreNullValues = true });
+            string JSON = JsonSerializer.Serialize<Dictionary<string, dynamic>>(new Dictionary<string, dynamic> { { "name", title }, { "message", message }, { "status", status }, { "visible", visible }, { "component_id", componentid }, { "component_status", componentstatus }, { "stickied", stickied } }, new JsonSerializerOptions() { IgnoreNullValues = true });
 
             LastActionRequest = JSON;
             HTTPBase apiBase = new HTTPBase();
