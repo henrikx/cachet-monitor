@@ -62,7 +62,7 @@ namespace cachet_monitor
         static void CheckHosts()
         {
             int hostIndex = 0;
-            foreach (Configuration.Host host in Configuration.GetConfiguration().Hosts)
+            foreach (Configuration.Expectation host in Configuration.GetConfiguration().Expectations)
             {
                 hostIndex++;
                 if (host.id == null)
@@ -70,11 +70,11 @@ namespace cachet_monitor
                     host.id = hostIndex.ToString();
                 }
             }
-            foreach (Configuration.Host host in Configuration.GetConfiguration().Hosts)
+            foreach (Configuration.Expectation host in Configuration.GetConfiguration().Expectations)
             {
                 if (!stopping)
                 {
-                    if (host.type == Configuration.Host.Types.http)
+                    if (host.type == Configuration.Expectation.Types.http)
                     {
                         Statuscheck statuscheck = new Statuscheck();
                         int statuscodeMin = Convert.ToInt32(host.ExpectedStatusCodeRange.Substring(0, 3));
@@ -92,7 +92,7 @@ namespace cachet_monitor
                         }
 
                     }
-                    else if (host.type == Configuration.Host.Types.ping)
+                    else if (host.type == Configuration.Expectation.Types.ping)
                     {
                         throw new NotImplementedException();
                     }
@@ -106,7 +106,7 @@ namespace cachet_monitor
         static Dictionary<string, int> hostFailCount = new Dictionary<string, int>();
         static Dictionary<string, string> trackedIncidents = new Dictionary<string, string>();
         static Dictionary<string, string> failedComponents = new Dictionary<string, string>();
-        static void RunActions(Configuration.Host host, bool failed)
+        static void RunActions(Configuration.Expectation host, bool failed)
         {
             if (failed && !hostFailCount.ContainsKey(host.id))
             {
@@ -122,11 +122,11 @@ namespace cachet_monitor
                     hostFailCount.Remove(host.id);
                 }
             }
-            foreach (Configuration.Host.Action action in host.Actions)
+            foreach (Configuration.Expectation.Action action in host.Actions)
             {
                 if (!hostFailCount.ContainsKey(host.id) || hostFailCount[host.id] >= action.failed_count)
                 {
-                    if (action.actiontype == Configuration.Host.Action.create_incident)
+                    if (action.actiontype == Configuration.Expectation.Action.create_incident)
                     {
                         try
                         {
@@ -169,7 +169,7 @@ namespace cachet_monitor
                             }
                         }
                     }
-                    if (action.actiontype == Configuration.Host.Action.update_component && host.Actions.Where(x => x.incident_parameters != null && x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
+                    if (action.actiontype == Configuration.Expectation.Action.update_component && host.Actions.Where(x => x.incident_parameters != null && x.incident_parameters.component_id == action.component_paramters.component_id).Count() < 1)
                     {
                         try
                         {
