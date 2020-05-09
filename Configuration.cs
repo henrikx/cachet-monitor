@@ -57,17 +57,17 @@ namespace cachet_monitor
                             Dictionary<string, string> optionslevel2 = new Dictionary<string, string>();
 
                             optionslevel2.Add("Add", "");
-                            if (currentConfiguration.Expectations == null)
+                            if (currentConfiguration.Hosts == null)
                             {
-                                currentConfiguration.Expectations = new List<Expectation>();
+                                currentConfiguration.Hosts = new List<Expectation>();
                             }
                             List<List<Expectation>> groupedhostlist = new List<List<Expectation>>();
-                            foreach (Expectation host in currentConfiguration.Expectations)
+                            foreach (Expectation host in currentConfiguration.Hosts)
                             {
                                 List<Expectation> samehosts = new List<Expectation>();
                                 if (groupedhostlist.Where(h => h.Contains(host)).Count() < 1)
                                 {
-                                    foreach (Expectation host_ in currentConfiguration.Expectations)
+                                    foreach (Expectation host_ in currentConfiguration.Hosts)
                                     {
                                         if (host_.path == host.path)
                                         {
@@ -93,11 +93,11 @@ namespace cachet_monitor
                                 case "Add":
                                     Console.Write("Path (URL for HTTP and IP for ping): ");
                                     userInputLevel2 = Console.ReadLine();
-                                    if (currentConfiguration.Expectations == null)
+                                    if (currentConfiguration.Hosts == null)
                                     {
-                                        currentConfiguration.Expectations = new List<Expectation>();
+                                        currentConfiguration.Hosts = new List<Expectation>();
                                     }
-                                    currentConfiguration.Expectations.Add(new Expectation { path = userInputLevel2 });
+                                    currentConfiguration.Hosts.Add(new Expectation { path = userInputLevel2 });
                                     break;
                                 case "Exit":
                                     backlevel2 = true;
@@ -105,29 +105,29 @@ namespace cachet_monitor
                                 default: //LEVEL3STARTER Host Details
                                     bool backlevel3 = false;
                                     string userInputLevel3;
-                                    int SelectedHost = currentConfiguration.Expectations.FindIndex(host => host == currentConfiguration.Expectations.FindAll(host => host.path == selectedOptionLevel2.Key.Split("|")[0])[Convert.ToInt32(selectedOptionLevel2.Key.Split("|")[1])-1]); //Find index of userselected host
+                                    int SelectedHost = currentConfiguration.Hosts.FindIndex(host => host == currentConfiguration.Hosts.FindAll(host => host.path == selectedOptionLevel2.Key.Split("|")[0])[Convert.ToInt32(selectedOptionLevel2.Key.Split("|")[1])-1]); //Find index of userselected host
                                     while (!backlevel3) 
                                     {
                                         Dictionary<string, string> optionslevel3 = new Dictionary<string, string>()
                                         {
                                             { "Delete", "" },
-                                            { "Path", currentConfiguration.Expectations[SelectedHost].path },
-                                            { "Type", currentConfiguration.Expectations[SelectedHost].type },
-                                            { "Expected Status Code Range", currentConfiguration.Expectations[SelectedHost].ExpectedStatusCodeRange },
-                                            { "Verify SSL", currentConfiguration.Expectations[SelectedHost].verifySSL.ToString() },
+                                            { "Path", currentConfiguration.Hosts[SelectedHost].path },
+                                            { "Type", currentConfiguration.Hosts[SelectedHost].type },
+                                            { "Expected Status Code Range", currentConfiguration.Hosts[SelectedHost].ExpectedStatusCodeRange },
+                                            { "Verify SSL", currentConfiguration.Hosts[SelectedHost].verifySSL.ToString() },
                                             { "Actions", "Actions List" }
                                         };
                                         KeyValuePair<string, string> selectedOptionLevel3 = RenderConfigurationDialogMenu(optionslevel3);
                                         switch (selectedOptionLevel3.Key)
                                         {
                                             case "Delete":
-                                                currentConfiguration.Expectations.Remove(currentConfiguration.Expectations[SelectedHost]);
+                                                currentConfiguration.Hosts.Remove(currentConfiguration.Hosts[SelectedHost]);
                                                 backlevel3 = true;
                                                 break;
                                             case "Path":
                                                 Console.Write("Path (URL for HTTP and IP for ping): ");
                                                 userInputLevel3 = Console.ReadLine();
-                                                currentConfiguration.Expectations[SelectedHost].path = userInputLevel3;
+                                                currentConfiguration.Hosts[SelectedHost].path = userInputLevel3;
                                                 backlevel3 = true;
                                                 break;
                                             case "Type":
@@ -135,20 +135,20 @@ namespace cachet_monitor
                                                 userInputLevel3 = Console.ReadLine();
                                                 if (userInputLevel3 == "http")
                                                 {
-                                                    currentConfiguration.Expectations[SelectedHost].type = userInputLevel3;
+                                                    currentConfiguration.Hosts[SelectedHost].type = userInputLevel3;
                                                 }
                                                 break;
                                             case "Expected Status Code Range":
                                                 Console.Write("Expected Status Code Range (from-to): ");
                                                 userInputLevel3 = Console.ReadLine();
-                                                currentConfiguration.Expectations[SelectedHost].ExpectedStatusCodeRange = userInputLevel3;
+                                                currentConfiguration.Hosts[SelectedHost].ExpectedStatusCodeRange = userInputLevel3;
                                                 break;
                                             case "Verify SSL":
                                                 Console.Write("Verify SSL (true/false): ");
                                                 userInputLevel3 = Console.ReadLine();
                                                 try
                                                 {
-                                                    currentConfiguration.Expectations[SelectedHost].verifySSL = Convert.ToBoolean(userInputLevel3);
+                                                    currentConfiguration.Hosts[SelectedHost].verifySSL = Convert.ToBoolean(userInputLevel3);
                                                 } catch (FormatException)
                                                 {
                                                     Console.WriteLine($"{selectedOptionLevel3.Key} is not a valid option.");
@@ -163,9 +163,9 @@ namespace cachet_monitor
                                                     Dictionary<string, string> optionslevel4 = new Dictionary<string, string>();
                                                     optionslevel4.Add("Add", "");
                                                     int actionindex = 0;
-                                                    if (currentConfiguration.Expectations[SelectedHost].Actions != null)
+                                                    if (currentConfiguration.Hosts[SelectedHost].Actions != null)
                                                     {
-                                                        foreach (Expectation.Action action in currentConfiguration.Expectations[SelectedHost].Actions)
+                                                        foreach (Expectation.Action action in currentConfiguration.Hosts[SelectedHost].Actions)
                                                         {
                                                             actionindex++;
                                                             optionslevel4.Add($"{action.actiontype}-{actionindex}", $"");
@@ -188,9 +188,9 @@ namespace cachet_monitor
                                                             string userInputLevel4incident_component_status = "";
                                                             string userInputLevel4component_id = "";
                                                             string userInputLevel4component_status = "";
-                                                            if (currentConfiguration.Expectations[SelectedHost].Actions == null)
+                                                            if (currentConfiguration.Hosts[SelectedHost].Actions == null)
                                                             {
-                                                                currentConfiguration.Expectations[SelectedHost].Actions = new List<Expectation.Action>();
+                                                                currentConfiguration.Hosts[SelectedHost].Actions = new List<Expectation.Action>();
                                                             }
                                                             if (userInputLevel4 == "create_incident")
                                                             {
@@ -211,7 +211,7 @@ namespace cachet_monitor
                                                                 {
                                                                     Console.Write("Incident component status (Status of component (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4)): ");
                                                                     userInputLevel4incident_component_status = Console.ReadLine();
-                                                                    currentConfiguration.Expectations[SelectedHost].Actions.Add(new Expectation.Action()
+                                                                    currentConfiguration.Hosts[SelectedHost].Actions.Add(new Expectation.Action()
                                                                     {
                                                                         actiontype = userInputLevel4,
                                                                         failed_count = Convert.ToInt32(userInputLevel4failed_count),
@@ -227,7 +227,7 @@ namespace cachet_monitor
                                                                     }) ;
                                                                 } else
                                                                 {
-                                                                    currentConfiguration.Expectations[SelectedHost].Actions.Add(new Expectation.Action()
+                                                                    currentConfiguration.Hosts[SelectedHost].Actions.Add(new Expectation.Action()
                                                                     {
                                                                         actiontype = userInputLevel4,
                                                                         failed_count = Convert.ToInt32(userInputLevel4failed_count),
@@ -251,7 +251,7 @@ namespace cachet_monitor
                                                                 userInputLevel4failed_count = Console.ReadLine();
 
 
-                                                                currentConfiguration.Expectations[SelectedHost].Actions.Add(new Expectation.Action()
+                                                                currentConfiguration.Hosts[SelectedHost].Actions.Add(new Expectation.Action()
                                                                 {
                                                                     actiontype = userInputLevel4,
                                                                     failed_count = Convert.ToInt32(userInputLevel4failed_count),
@@ -275,105 +275,105 @@ namespace cachet_monitor
                                                             while (!backlevel5)
                                                             {
                                                                 Dictionary<string, string> optionslevel5 = new Dictionary<string, string>();
-                                                                if (currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].actiontype == "create_incident")
+                                                                if (currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype == "create_incident")
                                                                 {
-                                                                    if (currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters == null)
+                                                                    if (currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters == null)
                                                                     {
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters = new Expectation.Action.IncidentParameters();
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters = new Expectation.Action.IncidentParameters();
                                                                     }
                                                                     optionslevel5 = new Dictionary<string, string>()
                                                                     {
                                                                         { "Delete", "" },
-                                                                        { "actiontype", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].actiontype},
-                                                                        { "failed_count", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].failed_count.ToString()},
-                                                                        { "incident_title", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.title},
-                                                                        { "incident_message", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.message},
-                                                                        { "incident_status", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.status.ToString()},
-                                                                        { "incident_solvedmessage", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage},
-                                                                        { "incident_component_id", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.component_id.ToString()},
-                                                                        { "incident_component_status", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus.ToString()},
+                                                                        { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
+                                                                        { "failed_count", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].failed_count.ToString()},
+                                                                        { "incident_title", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.title},
+                                                                        { "incident_message", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.message},
+                                                                        { "incident_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.status.ToString()},
+                                                                        { "incident_solvedmessage", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage},
+                                                                        { "incident_component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.component_id.ToString()},
+                                                                        { "incident_component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus.ToString()},
                                                                     };
-                                                                } else if (currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].actiontype == "update_component")
+                                                                } else if (currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype == "update_component")
                                                                 {
-                                                                    if (currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].component_paramters == null)
+                                                                    if (currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters == null)
                                                                     {
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].component_paramters = new Expectation.Action.ComponentParamters();
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters = new Expectation.Action.ComponentParamters();
                                                                     }
                                                                     optionslevel5 = new Dictionary<string, string>()
                                                                     {
                                                                         { "Delete", "" },
-                                                                        { "actiontype", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].actiontype},
-                                                                        { "failed_count", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].failed_count.ToString()},
-                                                                        { "component_id", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].component_paramters.component_id.ToString()},
-                                                                        { "component_status", currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].component_paramters.component_status.ToString()}
+                                                                        { "actiontype", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype},
+                                                                        { "failed_count", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].failed_count.ToString()},
+                                                                        { "component_id", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_id.ToString()},
+                                                                        { "component_status", currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_status.ToString()}
                                                                     };
                                                                 } else
                                                                 {
-                                                                    currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].actiontype = "create_incident";
+                                                                    currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype = "create_incident";
                                                                     backlevel5 = true;
                                                                 }
                                                                 KeyValuePair<string, string> selectedOptionLevel5 = RenderConfigurationDialogMenu(optionslevel5);
                                                                 switch (selectedOptionLevel5.Key)
                                                                 {
                                                                     case "Delete":
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions.Remove(currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction]);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions.Remove(currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction]);
                                                                         backlevel5 = true;
                                                                         break;
                                                                     case "failed_count":
                                                                         Console.Write("How many times the host has failed before the action is ran: ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].failed_count = Convert.ToInt32(userInputLevel5);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].failed_count = Convert.ToInt32(userInputLevel5);
                                                                         backlevel5 = true;
                                                                         break;
                                                                     case "incident_solvedmessage":
                                                                         Console.Write("Incident solved message (Message of incident when solved): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage = userInputLevel5;
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.solvedmessage = userInputLevel5;
                                                                         backlevel5 = true;
                                                                         break;
 
                                                                     case "actiontype":
                                                                         Console.Write("Action Type (create_incident/update_component): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].actiontype = userInputLevel5;
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].actiontype = userInputLevel5;
                                                                         backlevel5 = true;
                                                                         break;
                                                                     case "incident_title":
                                                                         Console.Write("Incident title (Title of an incient): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.title = userInputLevel5;
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.title = userInputLevel5;
                                                                         break;
                                                                     case "incident_message":
                                                                         Console.Write("Incident message (Description of an incient): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.message = userInputLevel5;
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.message = userInputLevel5;
                                                                         break;
                                                                     case "incident_status":
                                                                         Console.Write("Incident status (fixed=4/investigating=1/watching=3/identified=2): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.status = Convert.ToInt32(userInputLevel5);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.status = Convert.ToInt32(userInputLevel5);
                                                                         break;
                                                                     case "incident_component_id":
                                                                         Console.WriteLine("(Optional. Leave blank if using an update_component action!)");
                                                                         Console.Write("Incident component id (id of component): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.component_id = Convert.ToInt32(userInputLevel5);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.component_id = Convert.ToInt32(userInputLevel5);
                                                                         break;
                                                                     case "incident_component_status":
                                                                         Console.WriteLine("(Optional. Use only if component id is specified)");
                                                                         Console.Write("Incident component status (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus = Convert.ToInt32(userInputLevel5);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].incident_parameters.componentstatus = Convert.ToInt32(userInputLevel5);
                                                                         break;
                                                                     case "component_id":
                                                                         Console.Write("Component ID to update (id): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].component_paramters.component_id = Convert.ToInt32(userInputLevel5);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_id = Convert.ToInt32(userInputLevel5);
                                                                         break;
                                                                     case "component_status":
                                                                         Console.Write("Component status (Operational=1/Watching=3/PartialOutage=2/MajorOutage=4): ");
                                                                         userInputLevel5 = Console.ReadLine();
-                                                                        currentConfiguration.Expectations[SelectedHost].Actions[SelectedAction].component_paramters.component_status = Convert.ToInt32(userInputLevel5);
+                                                                        currentConfiguration.Hosts[SelectedHost].Actions[SelectedAction].component_paramters.component_status = Convert.ToInt32(userInputLevel5);
                                                                         break;
 
 
@@ -488,7 +488,7 @@ namespace cachet_monitor
         public string APIKey { get; set; }
         public string BaseURL { get; set; }
         public int Interval { get; set; }
-        public List<Expectation> Expectations { get; set; }
+        public List<Expectation> Hosts { get; set; }
         public class Expectation
         {
             [field: NonSerialized] public string id { get; set; }

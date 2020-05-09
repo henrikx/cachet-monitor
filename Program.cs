@@ -62,7 +62,7 @@ namespace cachet_monitor
         static void CheckHosts()
         {
             int hostIndex = 0;
-            foreach (Configuration.Expectation host in Configuration.GetConfiguration().Expectations)
+            foreach (Configuration.Expectation host in Configuration.GetConfiguration().Hosts)
             {
                 hostIndex++;
                 if (host.id == null)
@@ -70,7 +70,7 @@ namespace cachet_monitor
                     host.id = hostIndex.ToString();
                 }
             }
-            foreach (Configuration.Expectation host in Configuration.GetConfiguration().Expectations)
+            foreach (Configuration.Expectation host in Configuration.GetConfiguration().Hosts)
             {
                 if (!stopping)
                 {
