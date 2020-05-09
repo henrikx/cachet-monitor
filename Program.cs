@@ -34,9 +34,13 @@ namespace cachet_monitor
                 while (true && !stopping)
                 {
                     CheckHosts();
-                    if (!stopping)
+                    for (int i = 0; i <= Configuration.GetConfiguration().Interval; i++)
                     {
-                        Thread.Sleep(Configuration.GetConfiguration().Interval * 1000);
+                        if (!stopping)
+                        {
+
+                            Thread.Sleep(1000);
+                        }
                     }
                 }
                 isclean = true;
