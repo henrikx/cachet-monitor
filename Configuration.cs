@@ -131,9 +131,12 @@ namespace cachet_monitor
                                                 backlevel3 = true;
                                                 break;
                                             case "Type":
-                                                Console.Write("Type (http/ping): ");
+                                                Console.Write("Type (http): ");
                                                 userInputLevel3 = Console.ReadLine();
-                                                currentConfiguration.Expectations[SelectedHost].type = userInputLevel3;
+                                                if (userInputLevel3 == "http")
+                                                {
+                                                    currentConfiguration.Expectations[SelectedHost].type = userInputLevel3;
+                                                }
                                                 break;
                                             case "Expected Status Code Range":
                                                 Console.Write("Expected Status Code Range (from-to): ");
