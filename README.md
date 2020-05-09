@@ -16,7 +16,7 @@ Differences from the alternatives:
 * Separate actions per failed expectation.
 * Specify all details about an action such as message and component status.
 * Link incidents to component statuses.
-* (Experimental) Add 
+* (Experimental) Add multiple entries of the same host with different parameters (for example one actionset for http code 301, but another for http code 500).
 * Other things I couldn't think of right now.
 
 # Deploying with Docker-Compose
