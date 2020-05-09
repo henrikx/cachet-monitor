@@ -167,6 +167,10 @@ namespace cachet_monitor
                             if (Convert.ToInt32((ex.Response as System.Net.HttpWebResponse).StatusCode) == 404)
                             {
                                 Console.WriteLine("Webserver returned 404 while trying to create an incident update. It is likely that a user deleted the incident.");
+                                foreach (KeyValuePair<string, string> item in trackedIncidents.Where(x => x.Value.Contains(host.id)))
+                                {
+                                    trackedIncidents.Remove(item.Key);
+                                }
                             }
                         }
                     }
