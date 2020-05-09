@@ -13,10 +13,9 @@ In my opinion none of the alternatives offered adequate configuration possibilit
 
 Differences from the alternatives:
 * Support for choosing whether to fail on SSL.
-* Separate actions per failed expectation.
+* Separate actions per failed expectation. (Experimental: separate actions per failed expectation for the same path)
 * Specify all details about an action such as message and component status.
 * Link incidents to component statuses.
-* (Experimental) Add multiple entries of the same host with different parameters (for example one actionset for http code 301, but another for http code 500).
 * Other things I couldn't think of right now.
 
 # Deploying with Docker-Compose
