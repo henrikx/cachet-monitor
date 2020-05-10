@@ -36,9 +36,14 @@ namespace cachet_monitor
                     Console.WriteLine($"Host {URL} failed with message {ex.Message}");
                 }
             }
+            catch (OperationCanceledException ex)
+            {
+                Console.WriteLine($"Host {URL} failed with message {ex.Message}");
+                alive = false;
+            }
             previousRunResult = alive;
             return alive;
-        }
+        } 
         public bool previousRunResult { get; private set; }
     }
 }
