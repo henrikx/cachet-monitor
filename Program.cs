@@ -164,7 +164,7 @@ namespace cachet_monitor
                         }
                         catch (NullReferenceException)
                         {
-                            Console.WriteLine("Omitting duplicate request");
+                            Console.WriteLine("Omitting duplicate component request");
                         }
                         catch (System.Net.WebException ex)
                         {

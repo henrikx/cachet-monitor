@@ -52,26 +52,17 @@ namespace cachet_monitor
             Dictionary<string, dynamic> response = JsonSerializer.Deserialize<Dictionary<string, dynamic>>(apiBase.postRequestString(URL, API, JSON), options);
             return response;
         }
-
-        public List<string> LastComponentUpdates { get; private set; } = new List<string>();
         public Dictionary<string, dynamic> UpdateComponentStatus(int id, int status)
         {
             string URL = Configuration.GetConfiguration().BaseURL + "components/" + id.ToString();
             string API = Configuration.GetConfiguration().APIKey;
             string JSON = JsonSerializer.Serialize<Dictionary<string, dynamic>>(new Dictionary<string, dynamic> { { "status", status } }, new JsonSerializerOptions() { IgnoreNullValues = true });
-            if (!LastComponentUpdates.Contains(URL + " " + JSON))
-            {
-                LastActionRequest = JSON;
-                LastComponentUpdates.RemoveAll(x => x.Contains("components/" + id.ToString()));
-                LastComponentUpdates.Add(URL + " " + JSON);
-
-                HTTPBase apiBase = new HTTPBase();
-                var options = new JsonSerializerOptions();
-                options.Converters.Add(new ObjectToInferredTypesConverter());
-                Dictionary<string, dynamic> response = JsonSerializer.Deserialize<Dictionary<string, dynamic>>(apiBase.putRequestString(URL, API, JSON), options);
-                return response;
-            }
-            return null;
+            LastActionRequest = JSON;
+            HTTPBase apiBase = new HTTPBase();
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new ObjectToInferredTypesConverter());
+            Dictionary<string, dynamic> response = JsonSerializer.Deserialize<Dictionary<string, dynamic>>(apiBase.putRequestString(URL, API, JSON), options);
+            return response;
         }
         public Dictionary<string, dynamic> GetComponent(int id)
         {
