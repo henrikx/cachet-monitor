@@ -20,13 +20,11 @@ Differences from the alternatives:
 * Other things I couldn't think of right now.
 
 # Deploying with Docker-Compose
-You can deploy cachet-monitor with docker-compose. There are unfortunately no premade images, but the images are simple to make yourself.
+You can deploy cachet-monitor with docker-compose. There are images on Dockerhub.
 
 ```bash
-#Clone source repository
-git clone https://github.com/henrikx/cachet-monitor.git
-#Enter cloned repository containing the source code for build, the Dockerfile and the docker-compose.yml file.
-cd cachet-monitor
+#Download Docker-Compose file.
+wget https://github.com/henrikx/cachet-monitor/raw/master/docker-compose.yml
 #Edit the docker-compose.yml file with values such as data location and restart values.
 #New installations will need a config file. Enter the configuration CLI like so:
 docker-compose run --rm cachet-monitor --config
