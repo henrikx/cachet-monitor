@@ -133,7 +133,7 @@ namespace cachet_monitor
                             if (failed && !trackedIncidents.ContainsValue(host.id))
                             {
                                 Console.WriteLine("Service failed. Creating new incident");
-                                int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 2, action.incident_parameters.component_id, action.incident_parameters.componentstatus, true))["data"])["id"]));
+                                int id = Convert.ToInt32((((api.CreateIncident(action.incident_parameters.title, action.incident_parameters.message, action.incident_parameters.status, 1, action.incident_parameters.component_id, action.incident_parameters.componentstatus, true))["data"])["id"]));
                                 trackedIncidents.Remove(id.ToString());
                                 failedComponents.Remove(action.incident_parameters.component_id.Value.ToString());
                                 trackedIncidents.Add(id.ToString(), host.id);
