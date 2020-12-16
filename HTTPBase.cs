@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Net;
-using cachet_monitor;
 
-namespace JellyfinMediaGrouper.Core
+namespace cachet_monitor
 {
     class HTTPBase
     {
