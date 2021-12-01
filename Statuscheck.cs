@@ -1,9 +1,10 @@
-﻿using JellyfinMediaGrouper.Core;
-using System;
+﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
+
 
 namespace cachet_monitor
 {
@@ -44,6 +45,28 @@ namespace cachet_monitor
             previousRunResult = alive;
             return alive;
         } 
+        public bool CheckPing(string host)
+        {
+            bool alive = true;
+            Ping ping = new Ping();
+            try
+            {
+                PingReply reply = ping.Send(host);
+                if (reply.Status == IPStatus.Success)
+                {
+                    alive = true;
+                } else
+                {
+                    alive = false;
+                }
+            } catch (PingException ex)
+            {
+                alive = false;
+                Console.WriteLine($"Host {host} failed with message {ex.Message}");
+            }
+            previousRunResult = alive;
+            return alive;
+        }
         public bool previousRunResult { get; private set; }
     }
 }

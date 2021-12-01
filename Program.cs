@@ -74,6 +74,7 @@ namespace cachet_monitor
             {
                 if (!stopping)
                 {
+                    bool success = false;
                     if (host.type == Configuration.Expectation.Types.http)
                     {
                         Statuscheck statuscheck = new Statuscheck();
@@ -81,8 +82,17 @@ namespace cachet_monitor
                         int statuscodeMax = Convert.ToInt32(host.ExpectedStatusCodeRange.Substring(4, 3));
                         statuscheck.VerifySSL = host.verifySSL;
                         Console.WriteLine("Checking host: " + host.path);
-                        bool success = statuscheck.CheckHTTP(host.path, statuscodeMin, statuscodeMax);
-                        if (success == false)
+                        success = statuscheck.CheckHTTP(host.path, statuscodeMin, statuscodeMax);
+
+
+                    }
+                    else if (host.type == Configuration.Expectation.Types.ping)
+                    {
+                        Statuscheck statuscheck = new Statuscheck();
+                        Console.WriteLine("Checking host: " + host.path);
+                        success = statuscheck.CheckPing(host.path);
+                    }
+                    if (success == false)
                         {
                             RunActions(host, true);
                         }
@@ -90,12 +100,6 @@ namespace cachet_monitor
                         {
                             RunActions(host, false);
                         }
-
-                    }
-                    else if (host.type == Configuration.Expectation.Types.ping)
-                    {
-                        throw new NotImplementedException();
-                    }
                 } else
                 {
                     break;
